@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Easy Edit</title>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="styles/styles.css">
+
+
+</head>
+
+<body>
+
+<!-- SIDEBAR TOGGLE BUTTON -->
+<button class="sidebar-toggle" onclick="toggleSidebar()">
+  <i class="fas fa-bars"></i>
+</button>
+
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar-nav">
+  <!-- Brand Section -->
+  <div class="brand-section">
+    <i class="fas fa-file-alt"></i>
+    <span>Easy Edit</span>
+  </div>
+  
+  <!-- Sidebar Content -->
+  <div class="sidebar-content">
+    <!-- File Upload Section -->
+    <div class="sidebar-section">
+      <div class="section-title">
+        <i class="fas fa-upload"></i>
+        <span>Letterhead</span>
+      </div>
+      <div class="file-upload-wrapper">
+        <button class="file-upload-button" onclick="document.getElementById('pdfUpload').click()">
+          <i class="fas fa-file-upload"></i>
+          <span>Upload PDF</span>
+        </button>
+        <input type="file" id="pdfUpload" accept="application/pdf" onchange="loadPDF(this)" />
+      </div>
+    </div>
+    
+    <!-- Margins Section -->
+    <div class="sidebar-section">
+      <div class="section-title">
+        <i class="fas fa-ruler-combined"></i>
+        <span>Margins</span>
+      </div>
+      <div class="control-group">
+        <div class="control-row">
+          <label>Top (mm)</label>
+          <input type="number" id="topMargin" value="50" min="0" max="100" onchange="setMargin('top', this.value)" />
+        </div>
+        <div class="control-row">
+          <label>Bottom (mm)</label>
+          <input type="number" id="bottomMargin" value="30" min="0" max="100" onchange="setMargin('bottom', this.value)" />
+        </div>
+        <div class="control-row">
+          <label>Left (mm)</label>
+          <input type="number" id="leftMargin" value="25" min="0" max="100" onchange="setMargin('left', this.value)" />
+        </div>
+        <div class="control-row">
+          <label>Right (mm)</label>
+          <input type="number" id="rightMargin" value="25" min="0" max="100" onchange="setMargin('right', this.value)" />
+        </div>
+      </div>
+    </div>
+    
+    <!-- Font Section -->
+    <div class="sidebar-section">
+      <div class="section-title">
+        <i class="fas fa-font"></i>
+        <span>Font Settings</span>
+      </div>
+      <div class="control-group">
+        <div class="control-row">
+          <label>Font Family</label>
+          <select id="fontFamily" onchange="formatText('fontFamily', this.value)">
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="'Times New Roman', serif">Times New Roman</option>
+            <option value="'Georgia', serif">Georgia</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="'Verdana', sans-serif">Verdana</option>
+          </select>
+        </div>
+        <div class="control-row">
+          <label>Font Size</label>
+          <input type="number" id="fontSize" value="14" min="8" max="72" 
+                 onchange="formatText('fontSize', this.value + 'px')" />
+        </div>
+        <div class="control-row">
+          <label>Font Weight</label>
+          <select id="fontWeight" onchange="formatText('fontWeight', this.value)">
+            <option value="normal">Normal</option>
+            <option value="300">Light</option>
+            <option value="500">Medium</option>
+            <option value="600">Semi-bold</option>
+            <option value="700">Bold</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Text Formatting -->
+    <div class="sidebar-section">
+      <div class="section-title">
+        <i class="fas fa-edit"></i>
+        <span>Text Formatting</span>
+      </div>
+      <div class="control-group">
+        <div class="format-buttons">
+          <button class="format-button" id="boldBtn" onclick="toggleFormat('bold')" title="Bold">
+            <i class="fas fa-bold"></i>
+          </button>
+          <button class="format-button" id="italicBtn" onclick="toggleFormat('italic')" title="Italic">
+            <i class="fas fa-italic"></i>
+          </button>
+          <button class="format-button" id="underlineBtn" onclick="toggleFormat('underline')" title="Underline">
+            <i class="fas fa-underline"></i>
+          </button>
+          <button class="format-button" onclick="clearFormatting()" title="Clear Formatting">
+            <i class="fas fa-eraser"></i>
+          </button>
+        </div>
+        
+        <div class="format-buttons">
+          <button class="format-button" onclick="formatText('justifyLeft')" title="Align Left">
+            <i class="fas fa-align-left"></i>
+          </button>
+          <button class="format-button" onclick="formatText('justifyCenter')" title="Align Center">
+            <i class="fas fa-align-center"></i>
+          </button>
+          <button class="format-button" onclick="formatText('justifyRight')" title="Align Right">
+            <i class="fas fa-align-right"></i>
+          </button>
+          <button class="format-button" onclick="formatText('justifyFull')" title="Justify">
+            <i class="fas fa-align-justify"></i>
+          </button>
+        </div>
+        
+        <div class="color-picker-wrapper">
+          <input type="color" id="textColor" class="color-picker" 
+                 value="#000000" onchange="formatText('color', this.value)" />
+          <div class="color-picker-preview" onclick="document.getElementById('textColor').click()">
+            <i class="fas fa-palette"></i>
+            <span>Text Color</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="action-button" onclick="addPage()">
+        <i class="fas fa-plus"></i>
+        <span>Add New Page</span>
+      </button>
+      <button class="action-button" onclick="saveDefaults()">
+        <i class="fas fa-save"></i>
+        <span>Save Settings</span>
+      </button>
+      <button class="action-button primary" onclick="window.print()">
+        <i class="fas fa-print"></i>
+        <span>Print Document</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+  <div id="document">
+    <div class="page">
+      <div class="safe-zone" contenteditable="true" id="editableContent">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="scripts/script.js"></script>
+
+
+</body>
+</html>
