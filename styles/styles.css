@@ -478,24 +478,32 @@ body {
   body {
     background: none;
   }
-  
+
   .sidebar-nav,
-  .sidebar-toggle {
-    display: none;
+  .sidebar-toggle,
+  #user-widget {
+    display: none !important;
   }
-  
+
   .main-content {
     margin-left: 0 !important;
     padding: 0;
   }
-  
+
   .page {
     margin: 0;
     box-shadow: none;
     width: 210mm;
     height: 297mm;
+    background-size: cover;
+    background-position: center;
   }
-  
+
+  /* 🚫 REMOVE BACKGROUND WHEN OPTION IS SELECTED */
+  body.print-no-bg .page {
+    background-image: none !important;
+  }
+
   .safe-zone {
     outline: none;
   }

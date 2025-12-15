@@ -167,10 +167,35 @@
         <i class="fas fa-save"></i>
         <span>Save Settings</span>
       </button>
-      <button class="action-button primary" onclick="window.print()">
-        <i class="fas fa-print"></i>
-        <span>Print Document</span>
-      </button>
+  <!-- Print Options -->
+<div class="sidebar-section">
+  <div class="section-title">
+    <i class="fas fa-print"></i>
+    <span>Print Options</span>
+  </div>
+
+  <div class="control-group">
+    <label style="display:flex;align-items:center;gap:8px;">
+      <input type="radio" name="printBg" value="with" checked
+             onchange="setPrintBackground(true)">
+      With background PDF
+    </label>
+
+    <label style="display:flex;align-items:center;gap:8px;">
+      <input type="radio" name="printBg" value="without"
+             onchange="setPrintBackground(false)">
+      Without background PDF
+    </label>
+
+    <!-- Print Button -->
+    <button class="action-button primary" onclick="window.print()" style="margin-top:10px;">
+      <i class="fas fa-print"></i>
+      <span>Print Document</span>
+    </button>
+  </div>
+</div>
+
+
     </div>
   </div>
 </div>

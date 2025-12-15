@@ -182,7 +182,23 @@ function formatText(command, value) {
     applyStyleToSelection({ fontWeight: value });
     return;
   }
+
+/* TEXT FORMATTING FUNCTIONS */
+  document.execCommand(command, false, value);
+  updateFormatButtons();
+  
+  // Update input values to match current selection
+  if (command === 'fontSize') {
+    document.getElementById('fontSize').value = parseInt(value);
+  } else if (command === 'fontFamily') {
+    document.getElementById('fontFamily').value = value;
+  } else if (command === 'fontWeight') {
+    document.getElementById('fontWeight').value = value;
+  } else if (command === 'color') {
+    document.getElementById('textColor').value = value;
+  }
 }
+
 
 
 function toggleFormat(type) {
@@ -369,6 +385,12 @@ function loadDefaults() {
     document.getElementById('textColor').value = d.textColor;
     document.execCommand('foreColor', false, d.textColor);
   }
+}
+// ==========================
+// PRINT BACKGROUND CONTROL
+// ==========================
+function setPrintBackground(enable) {
+  document.body.classList.toggle("print-no-bg", !enable);
 }
 
 // Initialize toggle button visibility

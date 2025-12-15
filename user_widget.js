@@ -5,7 +5,7 @@
 // --- CONFIG ---
 const SESSION_CHECK_URL = "session_check.php";
 const LOGOUT_URL = "logout.php";
-// const LOGIN_PAGE = "https://melog.minionsenterprises.com/";
+const LOGIN_PAGE = "https://melog.minionsenterprises.com/";
 
 // --- 1️⃣ AUTO SESSION CHECK ---
 async function checkSession() {
