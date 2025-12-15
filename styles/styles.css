@@ -14,6 +14,26 @@
   --shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+/* =========================
+   USER WIDGET POSITION
+========================= */
+#user-widget {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  z-index: 2000; /* Above sidebar & editor */
+  display: flex;
+  align-items: center;
+}
+
+/* On small screens, adjust spacing */
+@media (max-width: 768px) {
+  #user-widget {
+    top: 14px;
+    right: 14px;
+  }
+}
+
 /* PAGE SETUP */
 @page {
   size: A4;

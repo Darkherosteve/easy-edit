@@ -7,6 +7,26 @@ let currentFormat = {
 };
 let isSidebarCollapsed = false;
 
+let savedRange = null;
+
+function saveSelection() {
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0) {
+    savedRange = sel.getRangeAt(0);
+  }
+}
+
+function restoreSelection() {
+  if (savedRange) {
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
+}
+
+document.addEventListener("selectionchange", saveSelection);
+
+
 /* TOGGLE SIDEBAR */
 function toggleSidebar() {
   if (window.innerWidth <= 992) {
@@ -121,40 +141,63 @@ function setMargin(type, value) {
   }, 500);
 }
 
+function applyStyleToSelection(styleObj) {
+  restoreSelection();
+
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+
+  const range = selection.getRangeAt(0);
+  if (range.collapsed) return;
+
+  const span = document.createElement("span");
+
+  Object.assign(span.style, styleObj);
+
+  range.surroundContents(span);
+  selection.removeAllRanges();
+}
+
+
 /* TEXT FORMATTING FUNCTIONS */
 function formatText(command, value) {
-  document.execCommand(command, false, value);
-  updateFormatButtons();
-  
-  // Update input values to match current selection
-  if (command === 'fontSize') {
-    document.getElementById('fontSize').value = parseInt(value);
-  } else if (command === 'fontFamily') {
-    document.getElementById('fontFamily').value = value;
-  } else if (command === 'fontWeight') {
-    document.getElementById('fontWeight').value = value;
-  } else if (command === 'color') {
-    document.getElementById('textColor').value = value;
+  restoreSelection();
+
+  if (command === "fontFamily") {
+    document.execCommand("fontName", false, value);
+    return;
+  }
+
+  if (command === "color") {
+    document.execCommand("foreColor", false, value);
+    return;
+  }
+
+  if (command === "fontSize") {
+    applyStyleToSelection({ fontSize: value + "px" });
+    return;
+  }
+
+  if (command === "fontWeight") {
+    applyStyleToSelection({ fontWeight: value });
+    return;
   }
 }
 
-function toggleFormat(format) {
-  const command = format === 'bold' ? 'bold' : 
-                  format === 'italic' ? 'italic' : 
-                  'underline';
-  
-  document.execCommand(command, false, null);
-  
-  // Toggle active state
-  currentFormat[format] = !currentFormat[format];
-  const button = document.getElementById(format + 'Btn');
-  
-  if (currentFormat[format]) {
-    button.classList.add('active');
-  } else {
-    button.classList.remove('active');
-  }
+
+function toggleFormat(type) {
+  restoreSelection();
+
+  const map = {
+    bold: "bold",
+    italic: "italic",
+    underline: "underline"
+  };
+
+  document.execCommand(map[type], false, null);
+  updateFormatButtons();
 }
+
 
 function clearFormatting() {
   document.execCommand('removeFormat', false, null);
@@ -197,33 +240,22 @@ function updateFormatButtons() {
     document.getElementById('underlineBtn').classList.toggle('active', isUnderline);
     
     // Try to get font size and family from selection
-    if (parentElement) {
-      const computedStyle = window.getComputedStyle(parentElement);
-      
-      // Update font size
-      const fontSize = parseInt(computedStyle.fontSize);
-      if (!isNaN(fontSize)) {
-        document.getElementById('fontSize').value = fontSize;
-      }
-      
-      // Update font family (simplified)
-      const fontFamily = computedStyle.fontFamily;
-      const fontSelect = document.getElementById('fontFamily');
-      for (let option of fontSelect.options) {
-        if (fontFamily.includes(option.value.replace(/['"]/g, ''))) {
-          fontSelect.value = option.value;
-          break;
-        }
-      }
-      
-      // Update font weight
-      const fontWeight = computedStyle.fontWeight;
-      document.getElementById('fontWeight').value = fontWeight;
-      
-      // Update color
-      const color = rgbToHex(computedStyle.color);
-      document.getElementById('textColor').value = color;
+if (parentElement) {
+  const cs = window.getComputedStyle(parentElement);
+
+  document.getElementById("fontSize").value = parseInt(cs.fontSize) || 14;
+  document.getElementById("fontWeight").value = cs.fontWeight;
+  document.getElementById("textColor").value = rgbToHex(cs.color);
+
+  const fontSelect = document.getElementById("fontFamily");
+  for (let opt of fontSelect.options) {
+    if (cs.fontFamily.includes(opt.value.replace(/['"]/g, ""))) {
+      fontSelect.value = opt.value;
+      break;
     }
+  }
+}
+
   }
 }
 
